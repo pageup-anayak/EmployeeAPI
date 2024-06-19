@@ -21,6 +21,7 @@ namespace EmployeeAPI.Provider.Services
             _mapper = mapper;
         }
 
+        #region CreateEmployeeAsync
         public async Task<bool> CreateEmployeeAsync(CreateEmployeeRequestDTO employee)
         {
             _logger.LogInformation($"Creating employee: {employee.Name}");
@@ -37,7 +38,9 @@ namespace EmployeeAPI.Provider.Services
             }
             return result;
         }
+        #endregion
 
+        #region DeleteEmployeeAsync
         public async Task<bool> DeleteEmployeeAsync(Employee employee)
         {
             _logger.LogInformation($"Deleting employee: {employee.Name}");
@@ -53,7 +56,9 @@ namespace EmployeeAPI.Provider.Services
             }
             return result;
         }
+        #endregion
 
+        #region EmployeeExists
         public async Task<bool> EmployeeExists(int? employeeId, string? email)
         {
             _logger.LogInformation($"Checking if employee exists by ID: {employeeId} or Email: {email}");
@@ -78,7 +83,9 @@ namespace EmployeeAPI.Provider.Services
             }
             return exists;
         }
+        #endregion
 
+        #region GetEmployee
         public async Task<Employee> GetEmployee(int? employeeId, string? email)
         {
             _logger.LogInformation($"Retrieving employee by ID: {employeeId} or Email: {email}");
@@ -94,26 +101,34 @@ namespace EmployeeAPI.Provider.Services
             }
             return await _context.Employees.FirstAsync(e => e.Email == email);
         }
+        #endregion
 
+        #region GetEmployees
         public async Task<IEnumerable<Employee>> GetEmployees()
         {
             _logger.LogInformation("Retrieving all employees");
             return await _context.Employees.ToListAsync();
         }
+        #endregion
 
+        #region GetEmployeeByDepartment
         public async Task<IEnumerable<Employee>> GetEmployeesByDepartmentAsync(int departmentId)
         {
             _logger.LogInformation($"Retrieving employees by department ID: {departmentId}");
             return await _context.Employees.Where(e => e.DepartmentId == departmentId).ToListAsync();
         }
+        #endregion
 
+        #region SaveAsync
         public async Task<bool> SaveAsync()
         {
             var saved = await _context.SaveChangesAsync();
             _logger.LogInformation($"Saved {saved} changes to the database");
             return saved > 0;
         }
+        #endregion
 
+        #region UpdateEmployeeAsync
         public async Task<bool> UpdateEmployeeAsync(UpdateEmployeeRequestDTO employee)
         {
             _logger.LogInformation($"Updating employee: {employee.Name}");
@@ -130,6 +145,7 @@ namespace EmployeeAPI.Provider.Services
             }
             return result;
         }
+        #endregion
     }
 }
 

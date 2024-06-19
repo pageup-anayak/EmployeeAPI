@@ -20,7 +20,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\EmployeeAPI.Contracts\EmployeeAPI.Contracts.csproj" />
+		<ProjectReference Include="..\EmployeeAPI.Contracts\EmployeeAPI.Contracts.csproj" />
+		<ProjectReference Include="..\EmployeeAPI.Extensions\EmployeeAPI.Extensions.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -4,6 +4,8 @@ using EmployeeAPI.Provider.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using EmployeeAPI.Contracts.enums;
+using EmployeeAPI.Contracts.Dtos.Requests.Departments;
+using AutoMapper;
 
 namespace EmployeeAPI.Provider.Services
 {
@@ -11,17 +13,21 @@ namespace EmployeeAPI.Provider.Services
     {
         private readonly EmployeeDBContext _context;
         private readonly ILogger<DepartmentService> _logger;
+        private readonly IMapper _mapper;
 
-        public DepartmentService(EmployeeDBContext context, ILogger<DepartmentService> logger)
+        public DepartmentService(EmployeeDBContext context, ILogger<DepartmentService> logger, IMapper mapper)
         {
             _context = context;
             _logger = logger;
+            _mapper = mapper;
         }
 
-        public async Task<bool> AddDepartmentAsync(Department department)
+        #region AddDepartmentAsync
+        public async Task<bool> AddDepartmentAsync(CreateDepartmentRequest department)
         {
             _logger.LogInformation($"Adding department: {department.Name}");
-            _context.Add(department);
+            var mappedDepartment = _mapper.Map<Department>(department);
+            _context.Add(mappedDepartment);
             var result = await SaveAsync();
             if (result)
             {
@@ -33,7 +39,26 @@ namespace EmployeeAPI.Provider.Services
             }
             return result;
         }
+        #endregion
 
+        #region UpdateDepartmentAsync
+        public async Task<bool> UpdateDepartmentAsync(Department department)
+        {
+            _logger.LogInformation($"Updating department: {department.Name}");
+            _context.Update(department);
+            var result = await SaveAsync();
+            if (result)
+            {
+                _logger.LogInformation($"Successfully updated department: {department.Name}");
+            }
+            else
+            {
+                _logger.LogError($"Failed to update department: {department.Name}");
+            }
+            return result;
+        }
+        #endregion
+        #region DepartmentExistsAsync
         public async Task<bool> DepartmentExistsAsync(int? departmentId, string? departmentName)
         {
             _logger.LogInformation($"Checking if department exists by ID: {departmentId} or Name: {departmentName}");
@@ -58,13 +83,17 @@ namespace EmployeeAPI.Provider.Services
             }
             return exists;
         }
+        #endregion
 
+        #region GetAllDepartmentAsync
         public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
         {
             _logger.LogInformation("Retrieving all departments");
             return await _context.Departments.ToArrayAsync();
         }
+        #endregion
 
+        #region GetDepartmentAsync
         public async Task<Department?> GetDepartmentAsync(int? departmentId, string? departmentName)
         {
             _logger.LogInformation($"Retrieving department by ID: {departmentId} or Name: {departmentName}");
@@ -80,30 +109,19 @@ namespace EmployeeAPI.Provider.Services
             }
             return await _context.Departments.FirstOrDefaultAsync(d => d.Name == departmentName);
         }
+        #endregion
 
+        #region SaveAsync
         public async Task<bool> SaveAsync()
         {
             var saved = await _context.SaveChangesAsync();
             _logger.LogInformation($"Saved {saved} changes to the database");
             return saved > 0;
         }
+        #endregion
 
-        public async Task<bool> UpdateDepartmentAsync(Department department)
-        {
-            _logger.LogInformation($"Updating department: {department.Name}");
-            _context.Update(department);
-            var result = await SaveAsync();
-            if (result)
-            {
-                _logger.LogInformation($"Successfully updated department: {department.Name}");
-            }
-            else
-            {
-                _logger.LogError($"Failed to update department: {department.Name}");
-            }
-            return result;
-        }
 
+        #region DeleteDepartmentAsync
         public async Task<bool> DeleteDepartmentAsync(Department department)
         {
             _logger.LogInformation($"Deleting department: {department.Name}");
@@ -119,13 +137,16 @@ namespace EmployeeAPI.Provider.Services
             }
             return result;
         }
+        #endregion
 
+        #region DepartmentHasAdmin
         public async Task<bool> DepartmentHasAdmin(int adminId, int departmentId)
         {
             var hasAdmin = await _context.Departments.FirstOrDefaultAsync((d) => d.Id == departmentId && d.Employees != null && d.Employees.Any(e => e.Id == adminId && e.EmployeeType == EmployeeType.Admin));
 
             return hasAdmin != null;
         }
+        #endregion
     }
 }
 

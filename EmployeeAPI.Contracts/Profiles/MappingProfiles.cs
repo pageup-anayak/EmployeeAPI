@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using EmployeeAPI.Contracts.Dtos.Requests.Employees;
+using EmployeeAPI.Contracts.Dtos.Requests.Todos;
 using EmployeeAPI.Contracts.Models;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace EmployeeAPI.Contracts.Profiles
         {
             CreateMap<Employee, CreateEmployeeRequestDTO>().ReverseMap();
             CreateMap<Employee, UpdateEmployeeRequestDTO>().ReverseMap();
+
+            CreateMap<Todo, CreateTodoRequest>().ReverseMap();
+            CreateMap<Todo, UpdateTodoRequest>().ReverseMap();
         }
     }
 }

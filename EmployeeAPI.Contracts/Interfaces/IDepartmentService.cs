@@ -1,4 +1,5 @@
-﻿using EmployeeAPI.Contracts.Models;
+﻿using EmployeeAPI.Contracts.Dtos.Requests.Departments;
+using EmployeeAPI.Contracts.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace EmployeeAPI.Contracts.Interfaces
         // SuperAdmin can only access 
         Task<IEnumerable<Department>> GetAllDepartmentsAsync();
         // SuperAdmin can only access 
-        Task<bool> AddDepartmentAsync(Department department);
+        Task<bool> AddDepartmentAsync(CreateDepartmentRequest department);
         // SuperAdmin can only access 
         Task<bool> UpdateDepartmentAsync(Department department);
         // SuperAdmin can only access 

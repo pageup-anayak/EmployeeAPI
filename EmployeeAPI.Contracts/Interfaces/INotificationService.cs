@@ -1,22 +1,18 @@
-﻿using EmployeeAPI.Contracts.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-
+﻿using EmployeeAPI.Contracts.Dtos.Requests.Notifications;
+using EmployeeAPI.Contracts.enums;
+using EmployeeAPI.Contracts.Models;
 
 namespace EmployeeAPI.Contracts.Interfaces
 {
     public interface INotificationService
     {
-        Task<IEnumerable<Notification>> GetAllNotificationsAsync();
+        Task<IEnumerable<Notification>> GetEmployeeNotificationsAsync(int employeeId, EmployeeType employeeType);
         // Notification can only create when there change in status of task
-        Task<Notification> AddNotificationAsync(Notification notification);
+        Task<bool> AddNotificationAsync(CreateNotificationRequest notification);
         // Only Status of notification will change
-        Task<Notification> UpdateNotificationAsync(Notification notification);
-        // Employee will get there notifications
-        Task<IEnumerable<Notification>> GetNotificationsForEmployeeAsync(int employeeId);
+        Task<bool> MarkNotificationAsReadAsync(Notification notification);
+
+        Task<Notification?> GetEmployeeNotificationAsync(int notificationId);
+        Task<bool> SaveAsync();
     }
 }

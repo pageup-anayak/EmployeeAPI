@@ -10,5 +10,6 @@ namespace EmployeeAPI.Contracts.Dtos.Requests.Employees
         public string? Address { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }
+        public required int DepartmentId { get; set; }
     }
 }

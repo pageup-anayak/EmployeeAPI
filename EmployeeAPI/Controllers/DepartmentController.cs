@@ -1,4 +1,5 @@
-﻿using EmployeeAPI.Contracts.Interfaces;
+﻿using EmployeeAPI.Contracts.Dtos.Requests.Departments;
+using EmployeeAPI.Contracts.Interfaces;
 using EmployeeAPI.Contracts.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,8 +23,6 @@ namespace EmployeeAPI.Controllers
             _employeeService = employeeService;
         }
 
-
-
         #region Get All Departments
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(IEnumerable<Department>))]
@@ -37,9 +36,9 @@ namespace EmployeeAPI.Controllers
 
         #region Create Department
         [HttpPost]
-        [ProducesResponseType(200, Type = typeof(IEnumerable<Department>))]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<bool>))]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateDepartmentAsync(Department department)
+        public async Task<IActionResult> CreateDepartmentAsync(CreateDepartmentRequest department)
         {
             if ((await _departmentService.DepartmentExistsAsync(null, department.Name)))
             {
@@ -95,6 +94,27 @@ namespace EmployeeAPI.Controllers
             }
             var updated = await _departmentService.UpdateDepartmentAsync(department);
             return Ok(updated);
+        }
+        #endregion
+
+        #region Delete Department
+        [HttpDelete("{id}")]
+        [ProducesResponseType(200, Type = typeof(IEnumerable<bool>))]
+        public async Task<IActionResult> DeleteDepartment(int id)
+        {
+            if (!await _departmentService.DepartmentExistsAsync(id, null))
+            {
+                return BadRequest("Department dose not exists");
+            }
+            // Whether have associated employees in department or not.
+            var dept = await _departmentService.GetDepartmentAsync(id, null);
+            // have no employee associated with department
+            if (dept != null && (dept.Employees == null || dept.Employees.Count == 0))
+            {
+                var deletedDept = await _departmentService.DeleteDepartmentAsync(dept);
+                return Ok(deletedDept);
+            }
+            return BadRequest("Have associated employees");
         }
         #endregion
     }

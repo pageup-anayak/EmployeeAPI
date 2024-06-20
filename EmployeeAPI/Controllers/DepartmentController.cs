@@ -59,6 +59,7 @@ namespace EmployeeAPI.Controllers
         /// <param name="identifier"></param> could be id or name
         /// <returns></returns>
         [HttpGet("{identifier}")]
+        [Authorize]
         public IActionResult GetDepartment(string identifier)
         {
             Task<Department?> department;

@@ -45,7 +45,6 @@ namespace EmployeeAPI.Provider.Services
         #endregion
 
         #region Get Employee Notifications
-
         public async Task<IEnumerable<Notification>> GetEmployeeNotificationsAsync(int employeeId, EmployeeType employeeType)
         {
             try

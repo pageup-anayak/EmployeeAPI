@@ -53,10 +53,10 @@ namespace EmployeeAPI.Provider.Services
                 switch (employeeType)
                 {
                     case EmployeeType.Employee:
-                        return await _context.Notifications.Where(e => e.AssignedToId == employeeId).ToListAsync();
+                        return await _context.Notifications.Where(e => e.AssignedToId == employeeId && e.IsSeen == false).ToListAsync();
 
                     case EmployeeType.Admin:
-                        return await _context.Notifications.Where(e => e.AssignedById == employeeId).ToListAsync();
+                        return await _context.Notifications.Where(e => e.AssignedById == employeeId && e.IsSeen == false).ToListAsync();
 
                     default:
                         throw new Exception("Notifications not available for the specified employee type.");
@@ -101,6 +101,15 @@ namespace EmployeeAPI.Provider.Services
 
         #endregion
 
+        #region Notifications Exists
+        public async Task<bool> NotificationsExistsAsync(MarkNotificationsAsSeenRequest notifications)
+        {
+            var notificationIds = notifications.Ids;
+            var existingIds = await _context.Notifications.Where(n => notificationIds.Contains(n.Id)).Select(n => n.Id).ToListAsync();
+            return existingIds.Count == notificationIds.Count;
+        }
+        #endregion
+
         #region Save Async
 
         public async Task<bool> SaveAsync()
@@ -119,7 +128,6 @@ namespace EmployeeAPI.Provider.Services
         #endregion
 
         #region Get Employee Notification
-
         public async Task<Notification?> GetEmployeeNotificationAsync(int notificationId)
         {
             try
@@ -132,7 +140,34 @@ namespace EmployeeAPI.Provider.Services
                 throw; // Rethrow the exception to propagate it up the call stack
             }
         }
+        #endregion
 
+        #region Mark Notifications As Read
+        public async Task<IEnumerable<int>> MarkNotificationsAsReadAsync(MarkNotificationsAsSeenRequest notifications)
+        {
+            _logger.LogInformation("Marking notifications as read...");
+            List<int> ids = notifications.Ids;
+            List<Notification> existingNotifications = await _context.Notifications.Where(n => ids.Contains(n.Id)).ToListAsync();
+
+            List<int> seenNofications = [];
+            foreach (Notification notification in existingNotifications)
+            {
+                if (notification.IsSeen)
+                {
+                    seenNofications.Add(notification.Id);
+                    _logger.LogInformation($"Notification ID {notification.Id} is already marked as seen.");
+
+                }
+                else
+                {
+                    _logger.LogInformation($"Marking notification ID {notification.Id} as seen.");
+                    notification.IsSeen = true;
+                }
+            }
+            await SaveAsync();
+            _logger.LogInformation("Notifications marked as read successfully.");
+            return seenNofications;
+        }
         #endregion
     }
 }

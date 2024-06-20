@@ -14,5 +14,8 @@ namespace EmployeeAPI.Contracts.Interfaces
 
         Task<Notification?> GetEmployeeNotificationAsync(int notificationId);
         Task<bool> SaveAsync();
+        Task<bool> NotificationsExistsAsync(MarkNotificationsAsSeenRequest notifications);
+        Task<IEnumerable<int>> MarkNotificationsAsReadAsync(MarkNotificationsAsSeenRequest notifications);
+
     }
 }
